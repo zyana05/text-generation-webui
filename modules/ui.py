@@ -76,7 +76,7 @@ if not shared.args.old_colors:
         body_text_color='rgb(64, 64, 64)',
         button_secondary_background_fill="white",
         button_secondary_border_color="var(--border-color-primary)",
-    input_shadow="none",
+        input_shadow="none",
         # button_shadow_hover удалён, не поддерживается в gradio theme.set
 
         # Dark Mode Colors
