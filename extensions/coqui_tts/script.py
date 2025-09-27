@@ -102,7 +102,8 @@ def voice_preview(string):
         language=languages[params["language"]]
     )
 
-    return f'<audio src="file/{output_file.as_posix()}?{int(time.time())}" controls autoplay></audio>'
+    autoplay = 'autoplay' if params['autoplay'] else ''
+    return f'<audio src="file/{output_file.as_posix()}?{int(time.time())}" controls {autoplay}></audio>'
 
 
 def history_modifier(history):

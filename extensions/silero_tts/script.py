@@ -169,7 +169,8 @@ def voice_preview(string):
     silero_input = f'<speak>{prosody}{xmlesc(string)}</prosody></speak>'
     model.save_wav(ssml_text=silero_input, speaker=params['speaker'], sample_rate=int(params['sample_rate']), audio_path=str(output_file))
 
-    return f'<audio src="file/{output_file.as_posix()}?{int(time.time())}" controls autoplay></audio>'
+    autoplay = 'autoplay' if params['autoplay'] else ''
+    return f'<audio src="file/{output_file.as_posix()}?{int(time.time())}" controls {autoplay}></audio>'
 
 
 def language_change(lang):
