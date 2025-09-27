@@ -1,33 +1,24 @@
-/css
-/extensions
-/installer_files
-/repositories
-/user_data
-
-.chroma
-.DS_Store
-.eslintrc.js
-.idea
-.installer_state.json
-.venv
-venv
-.envrc
-.direnv
-.vs
-.vscode
-*.bak
-*.ipynb
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env/
+*.sqlite3
 *.log
-*pycache*
-cert.pem
-key.pem
-package.json
-package-lock.json
-Thumbs.db
-wandb
 
-# ignore user docker config and top level links to docker files
-/docker-compose.yaml
-/docker-compose.yml
-/Dockerfile
-.env
+# Virtual environments / mamba
+env/
+textgen/
+.venv/
+.conda/
+
+# ChromaDB
+fastapi/chroma_db/
+
+# WebUI models (очень большие)
+webui/models/*.gguf
+
+# VS Code (некоторые предпочитают не включать)
+#.vscode/

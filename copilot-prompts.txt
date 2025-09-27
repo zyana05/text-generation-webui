@@ -1,0 +1,161 @@
+#################################################################
+
+COPILOT-PROMPTS.TXT FOR TEXTGEN-ASSISTANT
+
+#################################################################
+
+Инструкция:
+1. Откройте чат GitHub Copilot в VS Code (Ctrl+Alt+I).
+2. Скопируйте нужный промт из этого файла.
+3. Вставьте его в чат, чтобы сгенерировать код для вашего проекта.
+
+Для лучших результатов держите открытыми релевантные файлы
+(например, server_fastapi.py, memory.py), чтобы Copilot
+имел полный контекст.
+===============================================================
+1. Промты для FastAPI и WebUI
+===============================================================
+--- Общий промт для создания API ---
+Context: I am building a FastAPI backend for a local LLM agent.
+The agent uses Qwen2.5-14B-Instruct-Uncensored.gguf and LangGraph.
+Memory is handled via ChromaDB for RAG-based retrieval.
+
+Generate endpoints for:
+1. Sending a prompt to the agent (/ask_agent).
+2. Retrieving the agent's memory for a session (/get_memory).
+3. Managing tools and actions (ReAct nodes).
+
+Include type hints, Pydantic models for request/response, and async endpoints.
+Ensure all endpoints handle potential exceptions and return appropriate HTTP status codes.
+--- Шаблон для создания Pydantic модели ---
+Context: In fastapi/server_fastapi.py, create a Pydantic model for the /ask_agent endpoint.
+The model should be named AgentQuery and have two fields:
+- session_id: a string, used to track conversation history.
+- query: a string, the user's prompt for the agent.
+--- Шаблон для конкретного эндпоинта ---
+Context: In fastapi/server_fastapi.py, create an async FastAPI endpoint at POST /ask_agent.
+It should accept the AgentQuery Pydantic model.
+Inside the function, it should call a placeholder function run_agent_graph(session_id: str, query: str)
+and return the result in a JSON response.
+===============================================================
+2. Промты для управления памятью (memory.py)
+===============================================================
+--- Общий промт для модуля памяти ---
+Context: Implement a Python module fastapi/memory.py to manage the agent's memory.
+The module should contain a class MemoryManager.
+Memory types: WorkingMemory (in-memory dict), SemanticMemory (ChromaDB), EpisodicMemory (ChromaDB).
+
+Implement the following methods in the MemoryManager class:
+- __init__(self): to initialize the ChromaDB client and collections.
+- add_observation(self, session_id: str, observation: str): to add a document to the semantic memory.
+- retrieve_relevant_info(self, session_id: str, query: str, n_results: int = 3): to retrieve relevant documents from semantic memory.
+- store_episode(self, session_id: str, episode: dict): to store a structured experience in episodic memory.
+
+Use type hints, comments, and ensure methods are well-documented.
+--- Шаблон для инициализации ChromaDB ---
+Context: In fastapi/memory.py, write the __init__ method for the MemoryManager class.
+It should initialize a persistent ChromaDB client, storing data in a local directory called ./chroma_db.
+It should also get or create two collections: "semantic_memory" and "episodic_memory".
+--- Шаблон для функции RAG-поиска ---
+Context: In fastapi/memory.py, implement the retrieve_relevant_info method.
+It should take a query string, convert it to an embedding (using a placeholder function get_embedding(text)),
+and perform a query on the "semantic_memory" collection in ChromaDB, returning the n_results most similar documents.
+===============================================================
+3. Промты для генерации узлов LangGraph (ReAct)
+===============================================================
+--- Общий промт для создания узла ---
+Context: Create a Python function to serve as a LangGraph node for a ReAct agent.
+The agent's state is defined by a TypedDict called AgentState.
+
+Node type: call_model (for the Thought step).
+Function signature: def call_model(state: AgentState) -> AgentState:
+
+Requirements:
+- Accept the current AgentState as input.
+- Append the model's response (which could be a thought or a tool call) to the messages list in the state.
+- Return the updated state.
+- Include a detailed docstring explaining the node's purpose.
+--- Шаблон для определения состояния (AgentState) ---
+Context: Create a TypedDict for a LangGraph agent state.
+The state, named AgentState, should inherit from TypedDict and contain one key:
+- messages: an Annotated sequence of BaseMessages, using add_messages for accumulation.
+--- Шаблон для создания условного ребра ---
+Context: Create a Python function should_continue for a LangGraph conditional edge.
+The function should take state: AgentState as input.
+It should check the last message in state['messages'].
+If the message contains tool calls, it should return the string "continue".
+Otherwise, it should return the string "end".
+===============================================================
+4. Промты для синтетических данных и QLoRA
+===============================================================
+--- Общий промт для генерации данных ---
+Context: Generate synthetic training data for LoRA fine-tuning.
+Input: An agent's error trace or a failed task description provided as a JSON object.
+Output: A high-quality instruction-output pair in JSONL format.
+
+Requirements:
+- Preserve the context and original intent of the task.
+- The 'output' should contain a corrected and successful thought process or action.
+- The output format must be ready for QLoRA fine-tuning using Axolotl's "alpaca" format.
+
+Example Input:
+{
+"task": "Find the capital of Australia and calculate 15*3.",
+"trace": [
+{"thought": "I need to find the capital of Australia.", "action": "search('capital of Australia')"},
+{"observation": "Canberra"},
+{"thought": "Now I need to calculate 15*3.", "action": "calculator('15x3')"},
+{"observation": "Error: Invalid operator 'x'. Use '*' for multiplication."}
+]
+}
+--- Шаблон для создания Axolotl config.yaml ---
+Context: Create a YAML configuration file for fine-tuning the Qwen2.5-14B model using Axolotl with QLoRA on a single RTX 3060 12GB.
+
+Requirements:
+- Use Qwen/Qwen2.5-14B-Instruct as the base model.
+- Enable 4-bit loading (load_in_4bit: true).
+- Set adapter to qlora.
+- Use a small LoRA rank (e.g., 16) and alpha (e.g., 32).
+- Target the q_proj, k_proj, v_proj, o_proj modules.
+- Set a sequence length appropriate for a 12GB VRAM card (e.g., 2048).
+- Use a micro batch size of 1 with gradient accumulation.
+- Use the paged_adamw_8bit optimizer.
+===============================================================
+5. Общие инструкции для GitHub Copilot
+===============================================================
+
+Этот блок можно использовать для создания файла.github/prompts/instructions.prompt.md
+в вашем проекте, чтобы Copilot всегда следовал этим правилам.
+---
+mode: 'agent'
+tools: ['codebase', 'terminal']
+description: 'General instructions for the textgen-assistant project.'
+---
+
+## Project Overview
+You are an AI assistant helping to build a self-improving autonomous agent.
+The project is named textgen-assistant.
+The agent's core is the Qwen2.5-14B-Instruct-Uncensored.gguf model.
+The agent's logic is built using LangGraph, and it interacts with users via a FastAPI backend.
+
+## Tech Stack
+- Python 3.11+
+- FastAPI for the API layer.
+- LangGraph for agent orchestration (ReAct loop).
+- ChromaDB for vector storage (semantic and episodic memory).
+- Pydantic for data validation.
+- Axolotl for QLoRA fine-tuning.
+
+## Project Structure
+- fastapi/server_fastapi.py: Main API file.
+- fastapi/memory.py: Handles all interactions with ChromaDB and memory logic.
+- webui/: Contains the text-generation-webui instance.
+- webui/models/: Where the GGUF model is stored.
+
+## Coding Guidelines
+- Always use async functions for API calls in FastAPI.
+- All Python code must include type hints.
+- All functions and classes must have clear, concise docstrings.
+- Prioritize creating reusable, modular functions over monolithic code.
+- When generating code for memory.py, assume a ChromaDB client is available.
+- When generating code for server_fastapi.py, focus on API logic and call the MemoryManager or LangGraph agent for business logic.

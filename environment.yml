@@ -1,0 +1,14 @@
+name: textgen
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - fastapi
+      - uvicorn[standard]
+      - chromadb
+      - pydantic
+      - transformers
+      - accelerate
+      - sentence-transformers
