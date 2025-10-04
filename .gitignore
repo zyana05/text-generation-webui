@@ -3,6 +3,9 @@
 
 /css
 /extensions
+!extensions/max_system/
+extensions/max_system/__pycache__/
+extensions/max_system/agents/__pycache__/
 /installer_files
 /repositories
 
