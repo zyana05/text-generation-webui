@@ -1,0 +1,69 @@
+# MAX System Configuration
+# Self-developing AI Agent System
+
+system:
+  name: "MAX System"
+  version: "1.0.0"
+  description: "Self-developing local AI system based on .gguf models"
+
+# Memory settings
+memory:
+  sqlite_path: "user_data/max_system/memory/tasks.db"
+  chromadb_path: "user_data/max_system/embeddings"
+  max_history_items: 1000
+  embedding_model: "sentence-transformers/all-mpnet-base-v2"
+
+# Execution settings
+execution:
+  timeout: 300  # seconds
+  max_retries: 3
+  sandbox_dir: "user_data/max_system/sandbox"
+  projects_dir: "user_data/max_system/projects"
+
+# LLM settings
+llm:
+  max_tokens: 4096
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 40
+  
+# Agent settings
+agents:
+  planner:
+    max_steps: 20
+    planning_prompt: "Break down the task into detailed, actionable steps."
+  
+  coder:
+    max_code_length: 8000
+    add_tests: true
+    add_documentation: true
+  
+  executor:
+    python_timeout: 60
+    max_output_lines: 1000
+  
+  reflex:
+    max_fix_attempts: 3
+    analyze_errors: true
+
+# Logging
+logging:
+  log_dir: "user_data/max_system/logs"
+  log_level: "INFO"
+  save_prompts: true
+  save_responses: true
+
+# Git settings
+git:
+  auto_commit: true
+  commit_prefix: "[MAX]"
+  
+# Safety settings
+safety:
+  sandbox_enabled: true
+  restricted_imports:
+    - os.system
+    - subprocess.Popen
+    - eval
+    - exec
+  max_file_operations: 100
