@@ -16,6 +16,13 @@
 /user_data/logs/
 /user_data/cache/
 
+# MAX System - generated projects and databases
+/user_data/max_system/projects/
+/user_data/max_system/sandbox/
+/user_data/max_system/memory/*.db
+/user_data/max_system/embeddings/
+/user_data/max_system/logs/
+
 # Временные и системные файлы
 .chroma
 .DS_Store
