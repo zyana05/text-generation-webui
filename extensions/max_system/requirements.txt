@@ -1,0 +1,14 @@
+# MAX System Requirements
+# These packages are optional enhancements
+
+# Vector database (optional but recommended)
+chromadb>=0.4.0
+
+# Code quality tools (optional)
+pylint>=2.15.0
+flake8>=5.0.0
+black>=22.0.0
+
+# Testing framework (optional)
+pytest>=7.0.0
+pytest-timeout>=2.1.0
